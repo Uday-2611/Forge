@@ -1,0 +1,116 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-ibm-plex-mono);
+  --font-mono: var(--font-ibm-plex-mono);
+  --font-heading: var(--font-playfair);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  /* Forge design tokens */
+  --forge-bg: #0e0e0e;
+  --forge-surface: #1a1a1a;
+  --forge-surface-dim: #121212;
+  --forge-border: #2a2a2a;
+  --forge-border-hover: #3a3a3a;
+  --forge-text: #ededed;
+  --forge-text-dim: #cfcfcf;
+  --forge-muted: #777777;
+  --forge-dim: #555555;
+  --forge-accent: #a8ff3e;
+  --forge-accent-fg: #0a0a0a;
+
+  --background: #0e0e0e;
+  --foreground: #ededed;
+  --card: #1a1a1a;
+  --card-foreground: #ededed;
+  --popover: #1a1a1a;
+  --popover-foreground: #ededed;
+  --primary: #a8ff3e;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ededed;
+  --muted: #1a1a1a;
+  --muted-foreground: #777777;
+  --accent: #a8ff3e;
+  --accent-foreground: #0a0a0a;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --ring: #a8ff3e;
+  --radius: 0;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--forge-bg);
+  }
+
+  body {
+    font-family: var(--font-ibm-plex-mono), monospace;
+    color: var(--forge-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--forge-accent);
+    color: var(--forge-accent-fg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--forge-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--forge-border);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--forge-border-hover);
+  }
+
+  textarea::placeholder {
+    color: var(--forge-dim);
+    font-style: italic;
+  }
+
+  input::placeholder {
+    color: var(--forge-dim);
+  }
+
+  button {
+    font-family: inherit;
+  }
+}
