@@ -1,12 +1,20 @@
-import { 
-  pgTable, 
-  uuid, 
-  text, 
-  integer, 
-  timestamp, 
+import {
+  pgTable,
+  uuid,
+  text,
+  integer,
+  timestamp,
   boolean,
-  pgEnum
+  pgEnum,
+  jsonb,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
+
+export type SourceDetail = {
+  sub: string
+  title: string
+  upvotes: number | null
+}
 
 export const industryEnum = pgEnum('industry', [
   'Finance',
@@ -40,6 +48,7 @@ export const painPoints = pgTable('pain_points', {
   trendingScore: integer('trending_score').default(0),
   builderCount: integer('builder_count').default(0),
   isPublished: boolean('is_published').default(false),
+  sourceDetail: jsonb('source_detail').$type<SourceDetail[]>(),
   submittedBy: text('submitted_by'), // Better Auth user ID, null if scraped
   createdAt: timestamp('created_at').defaultNow(),
 })
@@ -63,7 +72,9 @@ export const savedIdeas = pgTable('saved_ideas', {
     .notNull()
     .references(() => painPoints.id),
   savedAt: timestamp('saved_at').defaultNow(),
-})
+}, (t) => [
+  uniqueIndex('saved_ideas_user_pain_unique').on(t.userId, t.painPointId),
+])
 
 export const builders = pgTable('builders', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -72,4 +83,6 @@ export const builders = pgTable('builders', {
     .notNull()
     .references(() => painPoints.id),
   claimedAt: timestamp('claimed_at').defaultNow(),
-})
+}, (t) => [
+  uniqueIndex('builders_user_pain_unique').on(t.userId, t.painPointId),
+])

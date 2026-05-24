@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { PainPoint } from "@/lib/data";
+import { getSavedPainPoints, getBuildingPainPoints, getSubmittedPainPoints } from "@/lib/actions";
+import { Card } from "./Card";
 
 const A = "var(--forge-accent)";
 const BG = "var(--forge-bg)";
@@ -34,12 +37,22 @@ const CONFIG: Record<ListKind, { title: string; sub: string; glyph: string; empt
   },
 };
 
+const FETCHERS: Record<ListKind, () => Promise<PainPoint[]>> = {
+  bookmarks: getSavedPainPoints,
+  building: getBuildingPainPoints,
+  submissions: getSubmittedPainPoints,
+};
+
 type Props = {
   kind: ListKind | null;
   onClose: () => void;
+  onOpenDetail: (p: PainPoint) => void;
 };
 
-export function ListPanel({ kind, onClose }: Props) {
+export function ListPanel({ kind, onClose, onOpenDetail }: Props) {
+  const [items, setItems] = useState<PainPoint[]>([]);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!kind) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -50,6 +63,21 @@ export function ListPanel({ kind, onClose }: Props) {
       document.body.style.overflow = "";
     };
   }, [kind, onClose]);
+
+  useEffect(() => {
+    if (!kind) {
+      setItems([]);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    FETCHERS[kind]().then((data) => {
+      if (!cancelled) setItems(data);
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [kind]);
 
   if (!kind) return null;
 
@@ -109,13 +137,36 @@ export function ListPanel({ kind, onClose }: Props) {
         {/* sub label */}
         <div style={{ padding: "18px 32px", borderBottom: `1px solid ${B}` }}>
           <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.04em", color: MUT }}>
-            {config.sub} · 00 total
+            {config.sub} · {loading ? "—" : items.length} total
           </span>
         </div>
 
-        {/* empty state */}
-        <EmptyState message={config.empty} />
+        {/* content */}
+        {loading ? (
+          <LoadingState />
+        ) : items.length === 0 ? (
+          <EmptyState message={config.empty} />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "1px" }}>
+            {items.map((p) => (
+              <Card key={p.id} p={p} onOpen={(item) => { onOpenDetail(item); onClose(); }} />
+            ))}
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div style={{
+      padding: "80px 32px",
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 16,
+    }}>
+      <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: DIM }}>
+        Loading...
+      </span>
     </div>
   );
 }

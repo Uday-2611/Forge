@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { PAIN_POINTS, PainPoint } from "@/lib/data";
+import { useState, useMemo, useEffect } from "react";
+import type { PainPoint } from "@/lib/data";
+import { getPainPoints } from "@/lib/actions";
 import { Nav } from "@/components/forge/Nav";
 import { HeroStrip } from "@/components/forge/HeroStrip";
 import { FilterRow } from "@/components/forge/FilterRow";
@@ -13,6 +14,7 @@ import { ProfileMenu } from "@/components/forge/ProfileMenu";
 import { ListPanel, ListKind } from "@/components/forge/ListPanel";
 
 export default function FeedPage() {
+  const [allItems, setAllItems] = useState<PainPoint[]>([]);
   const [industry, setIndustry] = useState("All");
   const [difficulty, setDifficulty] = useState("Any build");
   const [sort, setSort] = useState("Pain Score");
@@ -23,8 +25,12 @@ export default function FeedPage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [listKind, setListKind] = useState<ListKind | null>(null);
 
+  useEffect(() => {
+    getPainPoints().then(setAllItems);
+  }, []);
+
   const items = useMemo(() => {
-    let list = [...PAIN_POINTS];
+    let list = [...allItems];
     if (industry !== "All") list = list.filter((p) => p.industry === industry);
     if (difficulty !== "Any build")
       list = list.filter((p) => p.difficulty === difficulty);
@@ -39,9 +45,9 @@ export default function FeedPage() {
     }
     if (sort === "Pain Score") list.sort((a, b) => b.score - a.score);
     if (sort === "Trending") list.sort((a, b) => b.builders - a.builders);
-    if (sort === "New") list.sort((a, b) => b.id - a.id);
+    if (sort === "New") list.reverse();
     return list;
-  }, [industry, difficulty, sort, query]);
+  }, [allItems, industry, difficulty, sort, query]);
 
   return (
     <div className="min-h-screen bg-(--forge-bg) text-(--forge-text)">
@@ -78,7 +84,7 @@ export default function FeedPage() {
         onClose={() => setProfileOpen(false)}
         onShowList={(kind) => setListKind(kind)}
       />
-      <ListPanel kind={listKind} onClose={() => setListKind(null)} />
+      <ListPanel kind={listKind} onClose={() => setListKind(null)} onOpenDetail={setDetail} />
     </div>
   );
 }
