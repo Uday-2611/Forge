@@ -7,23 +7,6 @@ on:
     types: [created]
 
 jobs:
-  # Job 1: Request Copilot review on every new/updated PR
-  request-copilot-review:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-
-    steps:
-      - name: Request Copilot as reviewer
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} \
-            --add-reviewer copilot \
-            --repo ${{ github.repository }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # Job 2: Auto-merge when you comment /merge
   auto-merge:
     if: |
       github.event_name == 'issue_comment' &&
