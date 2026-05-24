@@ -19,6 +19,19 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Verify PR is approved and checks pass
+        run: |
+          STATE=$(gh pr view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --json reviewDecision,statusCheckRollup \
+            --jq '.reviewDecision')
+          if [ "$STATE" != "APPROVED" ]; then
+            echo "PR is not approved. Merge blocked."
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Merge the PR
         run: |
           gh pr merge ${{ github.event.issue.number }} \

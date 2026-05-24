@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, CSSProperties } from "react";
+import { useState, useEffect, useMemo, CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 
@@ -56,7 +56,7 @@ const ASCII_LINES = [
 function Mono({
   children, size = 11, color = MUT, track = 0.04, upper = false, style = {},
 }: {
-  children: React.ReactNode; size?: number; color?: string;
+  children: ReactNode; size?: number; color?: string;
   track?: number; upper?: boolean; style?: CSSProperties;
 }) {
   return (

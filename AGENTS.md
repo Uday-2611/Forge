@@ -8,7 +8,7 @@ structured ideas, displays them in a clean discovery feed.
 ## Tech Stack
 - Next.js 14
 - Neon (serverless Postgres) + Drizzle ORM
-- Clerk (auth — Google OAuth only)
+- better-auth (auth — Google OAuth only)
 - Gemini API (gemini-1.5-flash for bulk, pro for expansions)
 - shadcn/ui + Tailwind
 - Vercel (deployment)
@@ -35,7 +35,7 @@ Gemini processes into structured painPoints → published to feed
 
 ## Auth Rules
 - Browse feed: no auth required
-- Save / Submit / "I'm building this": requires Clerk auth
+- Save / Submit / "I'm building this": requires better-auth session
 - Google OAuth only, no email/password
 
 ## Gemini Usage

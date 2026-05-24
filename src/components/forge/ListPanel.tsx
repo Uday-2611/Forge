@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const A = "var(--forge-accent)";
 const BG = "var(--forge-bg)";

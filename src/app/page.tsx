@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, CSSProperties } from "react";
+import { useState, useEffect, useMemo, useRef, CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 
@@ -49,7 +49,7 @@ function Wordmark({ size = 22 }: { size?: number }) {
 function Mono({
   children, size = 11, color = MUT, track = 0.04, upper = false, style = {},
 }: {
-  children: React.ReactNode; size?: number; color?: string;
+  children: ReactNode; size?: number; color?: string;
   track?: number; upper?: boolean; style?: CSSProperties;
 }) {
   return (
@@ -59,7 +59,7 @@ function Mono({
   );
 }
 
-function SectionLabel({ children, num }: { children: React.ReactNode; num: string }) {
+function SectionLabel({ children, num }: { children: ReactNode; num: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 30 }}>
       <Mono size={10} color={A} track={0.22} upper>● {num}</Mono>
@@ -364,7 +364,7 @@ function StackViz() {
   );
 }
 
-function CapCard({ num, title, copy, viz }: { num: number; title: string; copy: string; viz: React.ReactNode }) {
+function CapCard({ num, title, copy, viz }: { num: number; title: string; copy: string; viz: ReactNode }) {
   const [hover, setHover] = useState(false);
   return (
     <div
