@@ -6,11 +6,13 @@ for real pain points, processes them with Gemini AI into
 structured ideas, displays them in a clean discovery feed.
 
 ## Tech Stack
-- Next.js 14
-- Neon (serverless Postgres) + Drizzle ORM
-- better-auth (auth — Google OAuth only)
+- Next.js 16 (App Router)
+- React 19
+- TypeScript 5
+- Neon (serverless Postgres) + Drizzle ORM 0.45
+- better-auth 1.6 (auth — Google OAuth only)
 - Gemini API (gemini-1.5-flash for bulk, pro for expansions)
-- shadcn/ui + Tailwind
+- shadcn/ui 4 + Tailwind CSS 4
 - Vercel (deployment)
 
 ## Core Pages
@@ -59,3 +61,23 @@ Gemini processes into structured painPoints → published to feed
 - CSS variables for all colors and typography
 - shadcn/ui components preferred
 - No inline styles
+
+## Code Quality Rules
+After writing or editing ANY code, always run these skills in order:
+1. `/simplify` — remove unnecessary complexity, dead code, over-engineering
+2. `/security-review` — catch OWASP issues, injection risks, auth gaps
+3. `/code-review:code-review` — final quality and correctness pass
+
+No code ships without all three passes complete.
+
+## Change Summary Rule
+After every prompt response or file edit, always end with a change summary:
+- **What changed:** list each file and the specific modification made
+- **Why:** the reason for the change (bug fix, feature, rule compliance, etc.)
+
+Format:
+```
+### Change Summary
+**What:** <file(s)> — <what was modified>
+**Why:** <reason>
+```

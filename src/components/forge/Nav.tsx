@@ -104,12 +104,14 @@ export function Nav({
               <SearchGlyph />
             </button>
           )}
-          <button onClick={onSubmitOpen} style={outlinedBtnStyle()}>
-            <span style={{ color: "var(--forge-accent)", marginRight: 8 }}>
-              +
-            </span>
-            Submit Pain Point
-          </button>
+          {session && (
+            <button onClick={onSubmitOpen} style={outlinedBtnStyle()}>
+              <span style={{ color: "var(--forge-accent)", marginRight: 8 }}>
+                +
+              </span>
+              Submit Pain Point
+            </button>
+          )}
           {session ? (
             <AvatarButton onClick={onProfileOpen} open={profileOpen} />
           ) : (

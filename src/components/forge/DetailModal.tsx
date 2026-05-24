@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { PainPoint } from "@/lib/data";
 import { Tag } from "./Tag";
+import { authClient } from "@/lib/auth-client";
+import { savePainPoint, claimBuilding } from "@/lib/actions";
 
 type DetailModalProps = {
   p: PainPoint | null;
@@ -10,6 +13,33 @@ type DetailModalProps = {
 };
 
 export function DetailModal({ p, onClose }: DetailModalProps) {
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
+  const [saved, setSaved] = useState(false);
+  const [building, setBuilding] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSave = () => {
+    if (!session) { router.push("/login"); return; }
+    startTransition(async () => {
+      await savePainPoint(p!.id);
+      setSaved(true);
+    });
+  };
+
+  const handleBuild = () => {
+    if (!session) { router.push("/login"); return; }
+    startTransition(async () => {
+      await claimBuilding(p!.id);
+      setBuilding(true);
+    });
+  };
+
+  useEffect(() => {
+    setSaved(false);
+    setBuilding(false);
+  }, [p?.id]);
+
   useEffect(() => {
     if (!p) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -267,9 +297,38 @@ export function DetailModal({ p, onClose }: DetailModalProps) {
             <span style={{ color: "var(--forge-accent)" }}>●</span>
             &nbsp;&nbsp;{p.builders} founders are building toward this
           </span>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button style={outlinedBtnStyle()}>Save</button>
-            <button style={primaryBtnStyle()}>I&apos;m building this →</button>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {!session && (
+              <span style={{
+                fontFamily: "var(--font-ibm-plex-mono), monospace",
+                fontSize: 10, letterSpacing: "0.16em",
+                color: "var(--forge-dim)", textTransform: "uppercase",
+              }}>
+                Sign in to save or build →
+              </span>
+            )}
+            <button
+              onClick={handleSave}
+              disabled={isPending || saved}
+              style={{
+                ...outlinedBtnStyle(),
+                opacity: saved ? 0.6 : 1,
+                cursor: saved ? "default" : "pointer",
+              }}
+            >
+              {saved ? "★ Saved" : "★ Save"}
+            </button>
+            <button
+              onClick={handleBuild}
+              disabled={isPending || building}
+              style={{
+                ...primaryBtnStyle(),
+                opacity: building ? 0.6 : 1,
+                cursor: building ? "default" : "pointer",
+              }}
+            >
+              {building ? "Building ✓" : "I'm building this →"}
+            </button>
           </div>
         </div>
       </div>

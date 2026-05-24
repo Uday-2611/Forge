@@ -1,12 +1,19 @@
-import { 
-  pgTable, 
-  uuid, 
-  text, 
-  integer, 
-  timestamp, 
+import {
+  pgTable,
+  uuid,
+  text,
+  integer,
+  timestamp,
   boolean,
-  pgEnum
+  pgEnum,
+  jsonb,
 } from 'drizzle-orm/pg-core'
+
+export type SourceDetail = {
+  sub: string
+  title: string
+  upvotes: number | null
+}
 
 export const industryEnum = pgEnum('industry', [
   'Finance',
@@ -40,6 +47,7 @@ export const painPoints = pgTable('pain_points', {
   trendingScore: integer('trending_score').default(0),
   builderCount: integer('builder_count').default(0),
   isPublished: boolean('is_published').default(false),
+  sourceDetail: jsonb('source_detail').$type<SourceDetail[]>(),
   submittedBy: text('submitted_by'), // Better Auth user ID, null if scraped
   createdAt: timestamp('created_at').defaultNow(),
 })

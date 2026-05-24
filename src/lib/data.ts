@@ -5,7 +5,7 @@ export type SourceDetail = {
 };
 
 export type PainPoint = {
-  id: number;
+  id: string;
   score: number;
   title: string;
   industry: string;
@@ -20,7 +20,7 @@ export type PainPoint = {
 
 export const PAIN_POINTS: PainPoint[] = [
   {
-    id: 1,
+    id: '1',
     score: 9.2,
     title:
       "Indie founders waste 11 hours a week reconciling Stripe, bank, and bookkeeping spreadsheets that never agree on the same number.",
@@ -54,7 +54,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 14,
   },
   {
-    id: 2,
+    id: '2',
     score: 8.7,
     title:
       "Newsletter writers track sponsorship pipelines inside Notion databases that break the moment a deal moves to step three.",
@@ -81,7 +81,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 7,
   },
   {
-    id: 3,
+    id: '3',
     score: 8.4,
     title:
       "Therapists in private practice still hand-write session notes because every EHR built for them feels like hospital software.",
@@ -116,7 +116,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 3,
   },
   {
-    id: 4,
+    id: '4',
     score: 7.9,
     title:
       "Open-source maintainers have no idea which of their thousand GitHub issues come from paying customers of companies built on their code.",
@@ -144,7 +144,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 11,
   },
   {
-    id: 5,
+    id: '5',
     score: 7.6,
     title:
       "Independent contractors send invoices in PDF, get paid in 47 days, and have no way to politely escalate before the relationship sours.",
@@ -171,7 +171,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 22,
   },
   {
-    id: 6,
+    id: '6',
     score: 9.0,
     title:
       "Adult children of aging parents are stitching estate paperwork together across six banks, three lawyers, and an unsearchable Gmail inbox.",
@@ -204,7 +204,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 5,
   },
   {
-    id: 7,
+    id: '7',
     score: 6.8,
     title:
       "Discord moderators of large communities run their entire policy stack inside pinned messages no one has read since 2022.",
@@ -226,7 +226,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 2,
   },
   {
-    id: 8,
+    id: '8',
     score: 8.1,
     title:
       "Etsy makers reorder packaging supplies from memory and discover at midnight they're out of mailers the day a sale goes live.",
@@ -254,7 +254,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 8,
   },
   {
-    id: 9,
+    id: '9',
     score: 7.3,
     title:
       "Adults diagnosed with ADHD in their thirties find every habit-tracking app either gamifies them into shame or vanishes into another tab.",
@@ -281,7 +281,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 18,
   },
   {
-    id: 10,
+    id: '10',
     score: 6.4,
     title:
       "Wet-lab scientists still copy pipetting volumes from a printed protocol to a paper notebook to an Excel file before any data exists.",
@@ -303,7 +303,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 4,
   },
   {
-    id: 11,
+    id: '11',
     score: 8.6,
     title:
       "First-time home buyers receive sixty PDFs across three weeks and have no shared place to ask 'wait, is this the right one to sign?'",
@@ -330,7 +330,7 @@ export const PAIN_POINTS: PainPoint[] = [
     builders: 6,
   },
   {
-    id: 12,
+    id: '12',
     score: 7.1,
     title:
       "Solo founders run customer interviews and lose 80% of the insight because Otter transcripts go straight into a folder they never reopen.",
