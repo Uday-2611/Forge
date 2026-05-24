@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Wordmark } from "./Wordmark";
+import { authClient } from "@/lib/auth-client";
+import { AvatarButton } from "./ProfileMenu";
 
 type NavProps = {
   onSubmitOpen: () => void;
@@ -9,6 +12,8 @@ type NavProps = {
   searchOpen: boolean;
   query: string;
   setQuery: (q: string) => void;
+  onProfileOpen: () => void;
+  profileOpen: boolean;
 };
 
 export function Nav({
@@ -17,7 +22,12 @@ export function Nav({
   searchOpen,
   query,
   setQuery,
+  onProfileOpen,
+  profileOpen,
 }: NavProps) {
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
+
   return (
     <div
       style={{
@@ -100,7 +110,11 @@ export function Nav({
             </span>
             Submit Pain Point
           </button>
-          <button style={ghostBtnStyle()}>Sign in</button>
+          {session ? (
+            <AvatarButton onClick={onProfileOpen} open={profileOpen} />
+          ) : (
+            <button onClick={() => router.push("/login")} style={ghostBtnStyle()}>Sign in</button>
+          )}
         </div>
       </div>
     </div>

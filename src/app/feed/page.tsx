@@ -9,6 +9,8 @@ import { Feed } from "@/components/forge/Feed";
 import { Footer } from "@/components/forge/Footer";
 import { DetailModal } from "@/components/forge/DetailModal";
 import { SubmitModal } from "@/components/forge/SubmitModal";
+import { ProfileMenu } from "@/components/forge/ProfileMenu";
+import { ListPanel, ListKind } from "@/components/forge/ListPanel";
 
 export default function FeedPage() {
   const [industry, setIndustry] = useState("All");
@@ -18,6 +20,8 @@ export default function FeedPage() {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [listKind, setListKind] = useState<ListKind | null>(null);
 
   const items = useMemo(() => {
     let list = [...PAIN_POINTS];
@@ -40,19 +44,15 @@ export default function FeedPage() {
   }, [industry, difficulty, sort, query]);
 
   return (
-    <div
-      style={{
-        background: "var(--forge-bg)",
-        color: "var(--forge-text)",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="min-h-screen bg-(--forge-bg) text-(--forge-text)">
       <Nav
         onSubmitOpen={() => setSubmitOpen(true)}
         onSearchToggle={() => setSearchOpen((v) => !v)}
         searchOpen={searchOpen}
         query={query}
         setQuery={setQuery}
+        onProfileOpen={() => setProfileOpen((v) => !v)}
+        profileOpen={profileOpen}
       />
 
       <HeroStrip />
@@ -73,6 +73,12 @@ export default function FeedPage() {
 
       <DetailModal p={detail} onClose={() => setDetail(null)} />
       <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
+      <ProfileMenu
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        onShowList={(kind) => setListKind(kind)}
+      />
+      <ListPanel kind={listKind} onClose={() => setListKind(null)} />
     </div>
   );
 }

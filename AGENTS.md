@@ -7,7 +7,7 @@ structured ideas, displays them in a clean discovery feed.
 
 ## Tech Stack
 - Next.js 14
-- Convex (database + cron jobs)
+- Neon (serverless Postgres) + Drizzle ORM
 - Clerk (auth — Google OAuth only)
 - Gemini API (gemini-1.5-flash for bulk, pro for expansions)
 - shadcn/ui + Tailwind
@@ -25,13 +25,13 @@ structured ideas, displays them in a clean discovery feed.
 - YC RFS page (Cheerio scrape)
 
 ## Data Flow
-Weekly cron → fetch raw posts → deduplicate by postId → 
+Weekly cron (Vercel Cron) → fetch raw posts → deduplicate by postId → 
 Gemini processes into structured painPoints → published to feed
 
-## Convex Tables
-- rawPosts: source, url, title, body, upvotes, fetchedAt, postId
-- painPoints: problem, industry, painScore, buildDifficulty, 
-  keywords, sourcePostIds[], trendDirection, submittedBy
+## Database Tables (Drizzle schema)
+- rawPosts: id, source, url, title, body, upvotes, fetchedAt, postId
+- painPoints: id, problem, industry, painScore, buildDifficulty,
+  keywords, sourcePostIds[], trendDirection, submittedBy, createdAt
 
 ## Auth Rules
 - Browse feed: no auth required
