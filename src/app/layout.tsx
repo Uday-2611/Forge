@@ -16,7 +16,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Forge — Pain Point Discovery",
+  title: "Forge — problems worth building",
   description:
     "A startup pain point discovery engine. Real problems worth building solutions for, sourced from Reddit, Hacker News, and user submissions.",
 };
