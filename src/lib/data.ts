@@ -58,7 +58,7 @@ export const PAIN_POINTS: PainPoint[] = [
     score: 8.7,
     title:
       "Newsletter writers track sponsorship pipelines inside Notion databases that break the moment a deal moves to step three.",
-    industry: "Creator",
+    industry: "Creator Economy",
     difficulty: "Weekend",
     source: "Reddit · 31 posts",
     sourceDetail: [
@@ -120,7 +120,7 @@ export const PAIN_POINTS: PainPoint[] = [
     score: 7.9,
     title:
       "Open-source maintainers have no idea which of their thousand GitHub issues come from paying customers of companies built on their code.",
-    industry: "Developer",
+    industry: "Other",
     difficulty: "Solo",
     source: "Hacker News · 18 posts",
     sourceDetail: [
@@ -208,7 +208,7 @@ export const PAIN_POINTS: PainPoint[] = [
     score: 6.8,
     title:
       "Discord moderators of large communities run their entire policy stack inside pinned messages no one has read since 2022.",
-    industry: "Creator",
+    industry: "Creator Economy",
     difficulty: "Weekend",
     source: "Reddit · 19 posts",
     sourceDetail: [
@@ -363,8 +363,8 @@ export const INDUSTRIES = [
   "Finance",
   "Productivity",
   "Healthcare",
-  "Creator",
-  "Developer",
+  "Creator Economy",
+  "Other",
 ];
 export const DIFFICULTIES = ["Any build", "Weekend", "Solo", "Team"];
 export const SORTS = ["Trending", "New", "Pain Score"];

@@ -192,9 +192,8 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
         }))
       )
       totalPainPoints += extracted.length
+      processedIds.push(...batch.map((b) => b.postId))
     }
-
-    processedIds.push(...batch.map((b) => b.postId))
   }
 
   if (processedIds.length > 0) {
@@ -212,8 +211,12 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
 }
 
 export async function POST(req: NextRequest) {
+  const envSecret = process.env.PIPELINE_SECRET
+  if (!envSecret) {
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
+  }
   const secret = req.headers.get('x-pipeline-secret') ?? ''
-  if (!safeEqual(secret, process.env.PIPELINE_SECRET ?? '')) {
+  if (!safeEqual(secret, envSecret)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const result = await runPipeline()

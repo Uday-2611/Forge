@@ -22,16 +22,24 @@ export function DetailModal({ p, onClose }: DetailModalProps) {
   const handleSave = () => {
     if (!session) { router.push("/login"); return; }
     startTransition(async () => {
-      await savePainPoint(p!.id);
-      setSaved(true);
+      try {
+        await savePainPoint(p!.id);
+        setSaved(true);
+      } catch {
+        // action failed; leave state unchanged
+      }
     });
   };
 
   const handleBuild = () => {
     if (!session) { router.push("/login"); return; }
     startTransition(async () => {
-      await claimBuilding(p!.id);
-      setBuilding(true);
+      try {
+        await claimBuilding(p!.id);
+        setBuilding(true);
+      } catch {
+        // action failed; leave state unchanged
+      }
     });
   };
 

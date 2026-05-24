@@ -7,15 +7,6 @@ import { PAIN_POINTS } from "../lib/data"
 const sql = neon(process.env.DATABASE_URL!)
 const db = drizzle(sql)
 
-const INDUSTRY_MAP: Record<string, string> = {
-  "Creator": "Creator Economy",
-  "Developer": "Other",
-}
-
-function mapIndustry(i: string) {
-  return (INDUSTRY_MAP[i] ?? i) as any
-}
-
 async function seed() {
   console.log("Seeding pain_points...")
 
@@ -24,7 +15,7 @@ async function seed() {
   for (const p of PAIN_POINTS) {
     await db.insert(painPoints).values({
       problem: p.title,
-      industry: mapIndustry(p.industry),
+      industry: p.industry as any,
       painScore: Math.round(p.score * 10),
       buildDifficulty: p.difficulty as any,
       targetUser: p.target,

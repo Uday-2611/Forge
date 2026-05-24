@@ -52,8 +52,10 @@ export async function unsavePainPoint(painPointId: string) {
   await db
     .delete(savedIdeas)
     .where(
-      eq(savedIdeas.userId, session.user.id) &&
-      eq(savedIdeas.painPointId, painPointId) as any
+      and(
+        eq(savedIdeas.userId, session.user.id),
+        eq(savedIdeas.painPointId, painPointId)
+      )
     )
 }
 

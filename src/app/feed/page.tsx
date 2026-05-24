@@ -45,7 +45,7 @@ export default function FeedPage() {
     }
     if (sort === "Pain Score") list.sort((a, b) => b.score - a.score);
     if (sort === "Trending") list.sort((a, b) => b.builders - a.builders);
-    if (sort === "New") list.sort((a, b) => b.id.localeCompare(a.id));
+    if (sort === "New") list.reverse();
     return list;
   }, [allItems, industry, difficulty, sort, query]);
 

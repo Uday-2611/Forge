@@ -69,10 +69,14 @@ export function ListPanel({ kind, onClose, onOpenDetail }: Props) {
       setItems([]);
       return;
     }
+    let cancelled = false;
     setLoading(true);
-    FETCHERS[kind]()
-      .then(setItems)
-      .finally(() => setLoading(false));
+    FETCHERS[kind]().then((data) => {
+      if (!cancelled) setItems(data);
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
   }, [kind]);
 
   if (!kind) return null;

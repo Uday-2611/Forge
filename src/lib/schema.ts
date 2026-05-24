@@ -7,6 +7,7 @@ import {
   boolean,
   pgEnum,
   jsonb,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 
 export type SourceDetail = {
@@ -71,7 +72,9 @@ export const savedIdeas = pgTable('saved_ideas', {
     .notNull()
     .references(() => painPoints.id),
   savedAt: timestamp('saved_at').defaultNow(),
-})
+}, (t) => [
+  uniqueIndex('saved_ideas_user_pain_unique').on(t.userId, t.painPointId),
+])
 
 export const builders = pgTable('builders', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -80,4 +83,6 @@ export const builders = pgTable('builders', {
     .notNull()
     .references(() => painPoints.id),
   claimedAt: timestamp('claimed_at').defaultNow(),
-})
+}, (t) => [
+  uniqueIndex('builders_user_pain_unique').on(t.userId, t.painPointId),
+])
