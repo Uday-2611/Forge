@@ -190,6 +190,21 @@ Keep the feed fresh by soft-archiving old pain points each pipeline run. Pain po
 
 ---
 
+## Future Enhancements (Post-Launch)
+
+### Expand Idea — AI Startup Brief
+
+Add an "Expand Idea →" button to `DetailModal.tsx` that calls Gemini Pro to generate a full startup brief on demand. Deferred to avoid Gemini Pro API costs at launch.
+
+**Implementation notes (already researched):**
+- Add `expandedBrief: jsonb` column to `pain_points` (cache result so Pro is called once per idea)
+- Add `expandIdea(painPointId)` server action — auth-gated, calls `gemini-1.5-pro`, returns `{ marketSize, competitors[], mvpPlan, risks[] }`
+- Show loading skeleton (~5–10s) while Pro model processes
+- Render brief below existing detail content in a 2-col grid
+- Only enable after launch when API costs are acceptable
+
+---
+
 ## 13. YC RFS Scraper (Optional, Post-Launch)
 
 Add Y Combinator Requests for Startups as a third data source.

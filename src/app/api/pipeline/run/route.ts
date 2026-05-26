@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { db } from '@/lib/db'
 import { rawPosts, painPoints, industryEnum, difficultyEnum } from '@/lib/schema'
 import { stripMarkdownFences } from '@/lib/utils'
-import { inArray } from 'drizzle-orm'
+import { inArray, lt } from 'drizzle-orm'
 
 const HN_QUERIES = [
   'frustrated with software',
@@ -12,6 +12,14 @@ const HN_QUERIES = [
   'annoying problem startup',
   'pain point workflow',
   'nobody has solved this',
+]
+
+const REDDIT_QUERIES = [
+  'frustrated with software',
+  'wish there was a tool for',
+  'annoying workflow problem',
+  'startup pain point',
+  'nobody has built this yet',
 ]
 
 type Industry = typeof industryEnum.enumValues[number]
@@ -26,6 +34,15 @@ type HNHit = {
   points?: number
 }
 
+type RedditPost = {
+  id: string
+  title: string
+  selftext: string
+  url: string
+  score: number
+  permalink: string
+}
+
 type GeminiPainPoint = {
   problem: string
   industry: Industry
@@ -38,6 +55,7 @@ type GeminiPainPoint = {
 
 type RawPost = {
   postId: string
+  source: 'hn' | 'reddit'
   title: string
   body: string
   url: string
@@ -62,6 +80,27 @@ function isValidDifficulty(v: unknown): v is Difficulty {
   return typeof v === 'string' && (difficultyEnum.enumValues as readonly string[]).includes(v)
 }
 
+async function fetchRedditPosts(query: string): Promise<RawPost[]> {
+  const url = `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&sort=top&limit=25`
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'forge-app/1.0 (startup pain point discovery)' },
+    next: { revalidate: 0 },
+  })
+  if (!res.ok) return []
+  const data = await res.json()
+  const posts: RedditPost[] = (data?.data?.children ?? []).map(
+    (c: { data: RedditPost }) => c.data
+  )
+  return posts.map((p) => ({
+    postId: `reddit_${p.id}`,
+    source: 'reddit' as const,
+    title: p.title ?? '',
+    body: p.selftext ?? '',
+    url: p.url ?? `https://reddit.com${p.permalink}`,
+    upvotes: p.score ?? 0,
+  }))
+}
+
 async function fetchHNPosts(query: string): Promise<RawPost[]> {
   const url = `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(query)}&tags=story&hitsPerPage=30`
   const res = await fetch(url, { next: { revalidate: 0 } })
@@ -69,6 +108,7 @@ async function fetchHNPosts(query: string): Promise<RawPost[]> {
   const data = await res.json()
   return (data.hits ?? []).map((h: HNHit) => ({
     postId: h.objectID,
+    source: 'hn' as const,
     title: h.title ?? '',
     body: h.story_text ?? h.comment_text ?? '',
     url: h.url ?? `https://news.ycombinator.com/item?id=${h.objectID}`,
@@ -128,8 +168,15 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
   if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY is not set')
   const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
-  const fetched = await Promise.all(HN_QUERIES.map(fetchHNPosts))
-  const allFetched = fetched.flat()
+  await db.update(painPoints)
+    .set({ isPublished: false })
+    .where(lt(painPoints.createdAt, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)))
+
+  const [hnFetched, redditFetched] = await Promise.all([
+    Promise.all(HN_QUERIES.map(fetchHNPosts)),
+    Promise.all(REDDIT_QUERIES.map(fetchRedditPosts)),
+  ])
+  const allFetched = [...hnFetched.flat(), ...redditFetched.flat()]
 
   const seen = new Set<string>()
   const uniqueFetched = allFetched.filter((p) => {
@@ -157,7 +204,7 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
   await db.insert(rawPosts).values(
     newPosts.map((p) => ({
       postId: p.postId,
-      source: 'hn',
+      source: p.source,
       title: p.title,
       body: p.body,
       url: p.url,
@@ -179,12 +226,12 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
         extracted.map((p) => ({
           problem: p.problem,
           industry: p.industry,
-          painScore: Math.min(100, Math.max(1, p.painScore)),
+          painScore: Math.min(100, Math.max(1, Math.round(p.painScore))),
           buildDifficulty: p.buildDifficulty,
           targetUser: p.targetUser,
           suggestedSolution: p.suggestedSolution,
-          keywords: p.keywords,
-          sourceType: 'hn',
+          keywords: Array.isArray(p.keywords) ? p.keywords.filter((k): k is string => typeof k === 'string') : [],
+          sourceType: batch[0].source,
           sourcePostIds: batch.map((b) => b.postId),
           isPublished: true,
           trendingScore: 0,
