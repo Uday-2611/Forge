@@ -10,12 +10,12 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
-    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
-    "db:seed": "tsx src/scripts/seed.ts"
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@neondatabase/serverless": "^1.1.0",
+    "@vercel/analytics": "^2.0.1",
     "better-auth": "^1.6.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

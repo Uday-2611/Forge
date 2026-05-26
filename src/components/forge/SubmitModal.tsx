@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { submitPainPoint } from "@/lib/actions";
 
 type SubmitModalProps = {
   open: boolean;
@@ -10,6 +11,8 @@ type SubmitModalProps = {
 export function SubmitModal({ open, onClose }: SubmitModalProps) {
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -26,8 +29,23 @@ export function SubmitModal({ open, onClose }: SubmitModalProps) {
     if (!open) {
       setText("");
       setSubmitted(false);
+      setLoading(false);
+      setError(null);
     }
   }, [open]);
+
+  async function handleSubmit() {
+    setLoading(true);
+    setError(null);
+    try {
+      await submitPainPoint(text);
+      setSubmitted(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (!open) return null;
 
@@ -195,13 +213,26 @@ export function SubmitModal({ open, onClose }: SubmitModalProps) {
             </div>
 
             <div style={{ padding: "0 28px 28px" }}>
+              {error && (
+                <p
+                  style={{
+                    fontFamily: "var(--font-ibm-plex-mono), monospace",
+                    fontSize: 11,
+                    color: "#ff5555",
+                    marginBottom: 12,
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  ✕ {error}
+                </p>
+              )}
               <button
-                disabled={!ready}
-                onClick={() => setSubmitted(true)}
+                disabled={!ready || loading}
+                onClick={handleSubmit}
                 style={{
                   width: "100%",
-                  background: ready ? "var(--forge-accent)" : "#1f1f1f",
-                  color: ready ? "var(--forge-accent-fg)" : "var(--forge-dim)",
+                  background: ready && !loading ? "var(--forge-accent)" : "#1f1f1f",
+                  color: ready && !loading ? "var(--forge-accent-fg)" : "var(--forge-dim)",
                   border: "none",
                   padding: "16px",
                   fontFamily: "var(--font-ibm-plex-mono), monospace",
@@ -209,11 +240,11 @@ export function SubmitModal({ open, onClose }: SubmitModalProps) {
                   letterSpacing: "0.18em",
                   fontWeight: 500,
                   textTransform: "uppercase",
-                  cursor: ready ? "pointer" : "not-allowed",
+                  cursor: ready && !loading ? "pointer" : "not-allowed",
                   transition: "background 0.15s",
                 }}
               >
-                {ready ? "Submit →" : "Keep typing…"}
+                {loading ? "Processing…" : ready ? "Submit →" : "Keep typing…"}
               </button>
             </div>
           </>

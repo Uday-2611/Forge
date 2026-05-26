@@ -16,6 +16,7 @@ export type SourceDetail = {
   upvotes: number | null
 }
 
+
 export const industryEnum = pgEnum('industry', [
   'Finance',
   'Healthcare', 
