@@ -146,7 +146,7 @@ async function processWithGemini(
   genai: GoogleGenerativeAI,
   posts: Pick<RawPost, 'title' | 'body' | 'upvotes'>[]
 ): Promise<GeminiPainPoint[]> {
-  const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash' })
   const result = await model.generateContent(buildGeminiPrompt(posts))
   const text = stripMarkdownFences(result.response.text())
   try {

@@ -158,7 +158,7 @@ export async function submitPainPoint(text: string): Promise<void> {
   if (!apiKey) throw new Error("GEMINI_API_KEY is not set")
 
   const genai = new GoogleGenerativeAI(apiKey)
-  const model = genai.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const model = genai.getGenerativeModel({ model: "gemini-2.0-flash" })
 
   const prompt = `You are a startup analyst. A user submitted this pain point description:
 
