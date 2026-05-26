@@ -149,6 +149,11 @@ export async function submitPainPoint(text: string): Promise<void> {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) throw new Error("Not authenticated")
 
+  const cleaned = text.trim()
+  const wordCount = cleaned ? cleaned.split(/\s+/).length : 0
+  if (wordCount < 6) throw new Error("Please describe the problem in at least 6 words")
+  if (cleaned.length > 2000) throw new Error("Submission is too long")
+
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) throw new Error("GEMINI_API_KEY is not set")
 
@@ -157,7 +162,7 @@ export async function submitPainPoint(text: string): Promise<void> {
 
   const prompt = `You are a startup analyst. A user submitted this pain point description:
 
-"${text}"
+"${cleaned}"
 
 Extract the core pain point and return ONLY a JSON object, no markdown, no explanation:
 {
@@ -204,11 +209,11 @@ Extract the core pain point and return ONLY a JSON object, no markdown, no expla
   await db.insert(painPoints).values({
     problem: p.problem,
     industry: p.industry,
-    painScore: Math.min(100, Math.max(1, p.painScore)),
+    painScore: Math.min(100, Math.max(1, Math.round(p.painScore))),
     buildDifficulty: p.buildDifficulty,
     targetUser: p.targetUser ?? null,
     suggestedSolution: p.suggestedSolution ?? null,
-    keywords: p.keywords ?? [],
+    keywords: Array.isArray(p.keywords) ? p.keywords.filter((k): k is string => typeof k === 'string') : [],
     sourceType: "user",
     sourcePostIds: [],
     isPublished: true,

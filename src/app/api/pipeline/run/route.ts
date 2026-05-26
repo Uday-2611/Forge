@@ -55,6 +55,7 @@ type GeminiPainPoint = {
 
 type RawPost = {
   postId: string
+  source: 'hn' | 'reddit'
   title: string
   body: string
   url: string
@@ -92,6 +93,7 @@ async function fetchRedditPosts(query: string): Promise<RawPost[]> {
   )
   return posts.map((p) => ({
     postId: `reddit_${p.id}`,
+    source: 'reddit' as const,
     title: p.title ?? '',
     body: p.selftext ?? '',
     url: p.url ?? `https://reddit.com${p.permalink}`,
@@ -106,6 +108,7 @@ async function fetchHNPosts(query: string): Promise<RawPost[]> {
   const data = await res.json()
   return (data.hits ?? []).map((h: HNHit) => ({
     postId: h.objectID,
+    source: 'hn' as const,
     title: h.title ?? '',
     body: h.story_text ?? h.comment_text ?? '',
     url: h.url ?? `https://news.ycombinator.com/item?id=${h.objectID}`,
@@ -201,7 +204,7 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
   await db.insert(rawPosts).values(
     newPosts.map((p) => ({
       postId: p.postId,
-      source: p.postId.startsWith('reddit_') ? 'reddit' : 'hn',
+      source: p.source,
       title: p.title,
       body: p.body,
       url: p.url,
@@ -223,12 +226,12 @@ async function runPipeline(): Promise<{ inserted: number; processed: number; mes
         extracted.map((p) => ({
           problem: p.problem,
           industry: p.industry,
-          painScore: Math.min(100, Math.max(1, p.painScore)),
+          painScore: Math.min(100, Math.max(1, Math.round(p.painScore))),
           buildDifficulty: p.buildDifficulty,
           targetUser: p.targetUser,
           suggestedSolution: p.suggestedSolution,
-          keywords: p.keywords,
-          sourceType: batch.some((b) => b.postId.startsWith('reddit_')) ? 'reddit' : 'hn',
+          keywords: Array.isArray(p.keywords) ? p.keywords.filter((k): k is string => typeof k === 'string') : [],
+          sourceType: batch[0].source,
           sourcePostIds: batch.map((b) => b.postId),
           isPublished: true,
           trendingScore: 0,
